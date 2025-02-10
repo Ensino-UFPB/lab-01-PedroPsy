@@ -1,1 +1,108 @@
 Coloque aqui todas as respostas das práticas indicadas no README.md
+
+Questão 1. route
+
+1. Qual a sua rede e máscara? 255.255.0.0
+2. Qual o seu roteador padrão (*default gateway*)? 172.18.0.1
+3. Quantas rotas configuradas tem seu computador? 2 rotas configuradas
+
+Questão 2. ip (ipconfig/ifconfig)
+
+1. Qual o IP da interface de rede? 127.0.0.1/8
+2. Qual a rede e a máscara? 172.18.0.2/16 brd 172.18.255.255
+4. Qual o nome da interface de rede principal?  eth0
+
+Questão 3. nslookup
+
+nslookup www.google.com // 172.217.29.228
+nslookup www.whitehouse.gov // 192.0.66.51
+nslookup www.rnp.br // 104.18.27.22
+nslookup www.ufpb.br // 150.165.254.52
+
+Questão 4. ping
+
+1. Teste a conectividade da sua rede local:
+   - Pingue a interface de loopback: `ping 127.0.0.1`. Qual o tempo de resposta? Em media 0.33 ms
+   - Pingue seu próprio endereço IP dentro do container. Qual o tempo de resposta? De 0.072 ms a 0.126 ms
+
+2. **Teste a conectividade com a Internet**:
+   - `ping www.ufpb.br`  Entre 25.103ms  a 40.157ms
+   - `ping www.yahoo.com`  Em media 169.241ms 
+   - `ping www.brasil.gov.br` Em media 77.326 ms
+   - `ping www.dce.ufpb.br` O site está inacessivel: ping: unknown host
+
+3. **Analise os tempos de resposta**:
+   - Compare os tempos de resposta para diferentes sites:
+     - `ping www.google.com`
+     - `ping www.rnp.br`
+     - `ping www.whitehouse.gov`
+   - O que pode influenciar as diferenças nos tempos?
+   O que pode diferenciar entre os tempos é a rota para o ip do site. Akguns endereços podem ter mais ou menos roteadores para chegar ao ip final, o que pode influenciar no tempo. Assim como tambem a quantidade de trafego na rede.
+
+Questão 5. traceroute
+
+1. Execute `traceroute`nos seguintes domínios:
+   ```sh
+   traceroute www.google.com
+   traceroute www.rnp.br
+   traceroute www.whitehouse.gov
+   ```
+   - Por que alguns roteadores ao longo do caminho não respondem?
+   Pode haver firewalls que estao bloqueando o acesso, afim de proteger contra ataques. 
+   - Isso significa necessariamente que há um problema na rede?
+   Nao, isso nao significa que a conexao foi perdida, mas que existem protocolos de segurança que nao permitem fazer o traceroute.
+
+Questão 6. netstat
+
+1. Liste todas as conexões e portas de escuta:
+   ```sh
+   netstat -tulnp  # Linux
+   portas de escuta: 127.0.0.11:38519 e 127.0.0.11:39157
+   ```
+2. Mostre a tabela de roteamento:
+   ```sh
+   netstat -r
+   Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+default         172.18.0.1      0.0.0.0         UG        0 0          0 eth0
+172.18.0.0      0.0.0.0         255.255.0.0     U         0 0          0 eth0
+   ```
+   - Os resultados são os mesmos do comando `route`? Sim.
+   - Há informações adicionais? Possui as colunas diferente Metric e Ref
+
+Questão 7. telnet
+
+1. Teste a conectividade do servidor web na porta 80:
+   ```sh
+   telnet www.ufpb.br 80
+   ```
+   - O servidor respondeu? O serviço está ativo?
+   O servidor nao respondeu, mas está ativo
+
+2. Teste a conectividade do serviço FTP na porta 21:
+   ```sh
+   telnet www.dce.ufpb.br 21
+   ```
+   - Você conseguiu conexão? Se não, como diferenciar um problema de rede de um problema no serviço?
+   O sevidor nao conectou. Dessa vez o output foi que o nome ou servidor nao respondem, ou seja, o serviço não exite ou nao esta disponivel.
+
+Questão 8. mtr
+
+1. Pesquise sobre o utilitário `mtr`.
+2. **Explique em que situações ele pode ser útil** no gerenciamento de redes.
+3. Teste `mtr` com alguns domínios:
+   ```sh
+   mtr www.google.com
+                                                                                                                                                                                          Packets               Pings
+ Host                                                                                                                                                                                  Loss%   Snt   Last   Avg  Best  Wrst StDev 
+ 1. 172.18.0.1                                                                                                                                                                          0.0%   174    0.2   0.2   0.2   0.4   0.0
+ 2. 172.217.28.164                                                                                                                                                                      1.2%   173   57.7  58.7  57.1  95.2   3.6
+   mtr www.ufpb.br
+                                                                                                                                                                           Packets               Pings
+ Host                                                                                                                                                                 Loss%   Snt   Last   Avg  Best  Wrst StDev 
+ 1. 172.18.0.1                                                                                                                                                        44.4%    10    0.2   0.2   0.2   0.3   0.0
+ 2. 150.165.254.52                                                                                                                                                     0.0%    10   24.9  25.5  24.5  30.5   1.8
+
+   ```
+4. **Pesquisa como interpretar os resultados deste utilitário e explique como esses dados podem ajudar a diagnosticar problemas na rede.**
+O MTR fornece uma visão mais detalhada e dinâmica do que o traceroute tradicional, ajudando a isolar rapidamente os pontos problemáticos na rede e direcionar a análise para áreas específicas que necessitam de solução.
+
